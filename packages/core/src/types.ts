@@ -61,6 +61,7 @@ export interface EditorEvents {
   selectionUpdate: { editor: Editor; transaction: Transaction };
   beforeTransaction: { editor: Editor; transaction: Transaction; nextState: EditorState };
   transaction: { editor: Editor; transaction: Transaction };
+  nodeRemoved: { editor: Editor; transaction: Transaction; node: ProseMirrorNode; range: Range };
   focus: { editor: Editor; event: FocusEvent; transaction: Transaction };
   blur: { editor: Editor; event: FocusEvent; transaction: Transaction };
   destroy: void;
@@ -136,6 +137,7 @@ export interface EditorOptions {
   onUpdate: (props: EditorEvents['update']) => void;
   onSelectionUpdate: (props: EditorEvents['selectionUpdate']) => void;
   onTransaction: (props: EditorEvents['transaction']) => void;
+  onNodeRemoved: (props: EditorEvents['nodeRemoved']) => void;
   onFocus: (props: EditorEvents['focus']) => void;
   onBlur: (props: EditorEvents['blur']) => void;
   onDestroy: (props: EditorEvents['destroy']) => void;

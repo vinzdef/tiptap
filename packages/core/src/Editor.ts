@@ -16,14 +16,9 @@ import {
   ClipboardTextSerializer, Commands, Drop, Editable, FocusEvents, Keymap, Paste,
   Tabindex,
 } from './extensions/index.js'
-import { createDocument } from './helpers/createDocument.js'
-import { getAttributes } from './helpers/getAttributes.js'
-import { getHTMLFromFragment } from './helpers/getHTMLFromFragment.js'
-import { getText } from './helpers/getText.js'
-import { getTextSerializersFromSchema } from './helpers/getTextSerializersFromSchema.js'
-import { isActive } from './helpers/isActive.js'
-import { isNodeEmpty } from './helpers/isNodeEmpty.js'
-import { resolveFocusPosition } from './helpers/resolveFocusPosition.js'
+import {
+  createDocument, findRemovedNodesOnTransaction, getAttributes, getHTMLFromFragment, getText, getTextSerializersFromSchema, isActive, isNodeEmpty, resolveFocusPosition,
+} from './helpers/index.js'
 import { NodePos } from './NodePos.js'
 import { style } from './style.js'
 import {
@@ -85,6 +80,7 @@ export class Editor extends EventEmitter<EditorEvents> {
     onUpdate: () => null,
     onSelectionUpdate: () => null,
     onTransaction: () => null,
+    onNodeRemoved: () => null,
     onFocus: () => null,
     onBlur: () => null,
     onDestroy: () => null,
@@ -108,6 +104,7 @@ export class Editor extends EventEmitter<EditorEvents> {
     this.on('update', this.options.onUpdate)
     this.on('selectionUpdate', this.options.onSelectionUpdate)
     this.on('transaction', this.options.onTransaction)
+    this.on('nodeRemoved', this.options.onNodeRemoved)
     this.on('focus', this.options.onFocus)
     this.on('blur', this.options.onBlur)
     this.on('destroy', this.options.onDestroy)
@@ -444,6 +441,25 @@ export class Editor extends EventEmitter<EditorEvents> {
       editor: this,
       transaction,
     })
+
+    const hasReplaceSteps = transaction.steps.some(step => step.constructor.name === 'ReplaceStep')
+
+    // We only want to do this if there are replace steps to avoid
+    // unnecessary work when there was no replaced content
+    if (hasReplaceSteps) {
+      const removedNodes = findRemovedNodesOnTransaction(transaction)
+
+      if (removedNodes.length) {
+        removedNodes.forEach(({ node, range }) => {
+          this.emit('nodeRemoved', {
+            editor: this,
+            transaction,
+            node,
+            range,
+          })
+        })
+      }
+    }
 
     if (selectionHasChanged) {
       this.emit('selectionUpdate', {
