@@ -442,23 +442,17 @@ export class Editor extends EventEmitter<EditorEvents> {
       transaction,
     })
 
-    const hasReplaceSteps = transaction.steps.some(step => step.constructor.name === 'ReplaceStep')
+    const removedNodes = findRemovedNodesOnTransaction(transaction)
 
-    // We only want to do this if there are replace steps to avoid
-    // unnecessary work when there was no replaced content
-    if (hasReplaceSteps) {
-      const removedNodes = findRemovedNodesOnTransaction(transaction)
-
-      if (removedNodes.length) {
-        removedNodes.forEach(({ node, range }) => {
-          this.emit('nodeRemoved', {
-            editor: this,
-            transaction,
-            node,
-            range,
-          })
+    if (removedNodes) {
+      removedNodes.forEach(({ node, range }) => {
+        this.emit('nodeRemoved', {
+          editor: this,
+          transaction,
+          node,
+          range,
         })
-      }
+      })
     }
 
     if (selectionHasChanged) {
