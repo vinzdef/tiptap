@@ -346,6 +346,27 @@ declare module '@tiptap/core' {
       | null
 
     /**
+     * A node has been removed from the document.
+     */
+    onNodeRemoved?:
+      | ((
+          this: {
+            name: string
+            options: Options
+            storage: Storage
+            editor: Editor
+            parent: ParentConfig<ExtensionConfig<Options, Storage>>['onNodeRemoved']
+          },
+          props: {
+            editor: Editor
+            transaction: Transaction
+            node: Node
+            range: { from: number; to: number }
+          },
+        ) => void)
+      | null
+
+    /**
      * The editor is focused.
      */
     onFocus?:
