@@ -147,6 +147,7 @@ class EditorInstanceManager {
       onFocus: (...args) => this.options.current.onFocus?.(...args),
       onSelectionUpdate: (...args) => this.options.current.onSelectionUpdate?.(...args),
       onTransaction: (...args) => this.options.current.onTransaction?.(...args),
+      onNodeRemoved: (...args) => this.options.current.onNodeRemoved?.(...args),
       onUpdate: (...args) => this.options.current.onUpdate?.(...args),
       onContentError: (...args) => this.options.current.onContentError?.(...args),
       onDrop: (...args) => this.options.current.onDrop?.(...args),
