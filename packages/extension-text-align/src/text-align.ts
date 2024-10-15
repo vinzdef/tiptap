@@ -73,7 +73,14 @@ export const TextAlign = Extension.create<TextAlignOptions>({
                 return {}
               }
 
-              return { style: `text-align: ${attributes.textAlign}` }
+              if (attributes.textAlign === 'justify') {
+                return { style: `text-align: ${attributes.textAlign}` }
+              }
+
+              return { 
+                style: `text-align: ${attributes.textAlign}`,
+                align: attributes.textAlign
+              }
             },
           },
         },
